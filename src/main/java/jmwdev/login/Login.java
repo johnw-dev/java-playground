@@ -1,12 +1,18 @@
 package jmwdev.login;
 
-import java.io.IOException;
-import java.util.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Scanner;
 
 
 public class Login {
-    private static Map<String, Password> credentialsCache = new HashMap<>();
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Map<String, Password> credentialsCache = new HashMap<>();
+    private static final Scanner scanner = new Scanner(System.in);
+    static Logger logger = LogManager.getLogger("Login");
 
     public static void initialisePassword() {
         String myInitialPassword = "password";
@@ -14,21 +20,21 @@ public class Login {
     }
 
     public static String getUser() {
-        System.out.println("username:");
+        logger.info("username:");
         return scanner.nextLine();
     }
 
     public static char[] getPass() {
-        System.out.println("password:");
+        logger.info("password:");
         // not exactly securely getting pass from user but for the notional problem in commandline
         return scanner.nextLine().toCharArray();
     }
 
-    static Optional<String> loginChallenge() throws IOException {
-        for(int i=0; i<3;i++) {
+    static Optional<String> loginChallenge() {
+        for (int i = 0; i < 3; i++) {
             String user = getUser();
             char[] pass = getPass();
-            if(credentialsCache.get(user).matches(pass)) {
+            if (credentialsCache.get(user).matches(pass)) {
                 return Optional.of(user);
             }
         }
@@ -39,10 +45,9 @@ public class Login {
         initialisePassword();
         try {
             String user = loginChallenge().orElseThrow(AccessDeniedException::new);
-            System.out.println("welcome "+user);
-        }
-        catch(AccessDeniedException | IOException e) {
-            System.out.println("Access denied");
+            logger.info("welcome {}", user);
+        } catch (AccessDeniedException e) {
+            logger.info("Access denied");
         }
     }
 }

@@ -7,7 +7,7 @@ import java.util.List;
 import static jmwdev.FibonacciSeries.getSeries;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FibonacciSeriesTest {
+class FibonacciSeriesTest {
 
     private void assertResult(Integer[] expected, List<Integer> result, String test) {
         assertAll(test,
@@ -18,7 +18,7 @@ public class FibonacciSeriesTest {
     }
 
     @Test
-    public void testFibonacci() {
+    void testFibonacci() {
         assertThrows(IllegalArgumentException.class, () -> getSeries(0), "0 element");
         assertResult(new Integer[]{0}, getSeries(1), "1 element");
         assertResult(new Integer[]{0, 1}, getSeries(2), "2 elements");

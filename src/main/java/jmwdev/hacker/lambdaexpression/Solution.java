@@ -1,11 +1,13 @@
 package jmwdev.hacker.lambdaexpression;
 
-import java.util.*;
-import java.util.regex.*;
-//
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -43,6 +45,63 @@ public class Solution {
 
     private static final Logger logger = LogManager.getLogger("hacker.lambdaexpression");
 
+    public static void main(String[] args) {
+
+//        Example input
+//        List<String> commands = Arrays.asList( new String[]{"5", "1 4", "2 5", "3 898", "1 3", "2 12", "3 88", "3 895598", "3 895498","3 89588",}); // NO SONAR
+
+        logger.info("enter a line separated list of commands followed by a number to execute: [1-3] [0-n]");
+        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
+        List<String> commands = new ArrayList<>();
+        Scanner in = new Scanner(System.in);
+        String input = in.nextLine();
+        while (input != null && !input.isEmpty()) {
+            commands.add(input);
+            input = in.nextLine();
+        }
+        process(commands.stream());
+    }
+
+    public static void process(Stream<String> in) {
+        in.map(str -> {
+            String[] vars = str.split(" ");
+            if (vars.length != 2) return "";
+            return Command.getCommand(vars[0]).getAnswer(vars[1]);
+        }).forEach(logger::info);
+    }
+
+    private static PerformOperation isOdd() {
+        Pattern pattern = Pattern.compile("[13579]$");
+        return in -> pattern.matcher(in).find();
+    }
+
+    private static PerformOperation isPrime() {
+
+        return in -> {
+            int number = Integer.parseInt(in);
+            for (int i = 2; i < number / 2; i++) {
+                if (number % i == 0) {
+                    return false;
+                }
+            }
+            return true;
+        };
+    }
+
+    private static PerformOperation isPalindrome() {
+        return in -> {
+            int middle = (in.length() / 2);
+            String s1 = in.substring(0, middle);
+            String s2 = in.length() % 2 == 0 ? in.substring(middle) : in.substring(middle + 1);
+            for (int i = 0; i < s1.length(); i++) {
+                if (s1.charAt(s1.length() - 1 - i) != s2.charAt(i)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+    }
+
     enum Command {
         IS_ODD("1", "ODD", "EVEN", isOdd()),
         IS_PRIME("2", "PRIME", "COMPOSITE", isPrime()),
@@ -72,63 +131,6 @@ public class Solution {
                 return this.negative;
             }
         }
-    }
-
-    public static void main(String[] args) {
-
-//        Example input
-//        List<String> commands = Arrays.asList( new String[]{"5", "1 4", "2 5", "3 898", "1 3", "2 12", "3 88", "3 895598", "3 895498","3 89588",});
-
-        logger.info("enter a line separated list of commands followed by a number to execute: [1-3] [0-n]");
-        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
-        List<String> commands = new ArrayList<>();
-        Scanner in = new Scanner(System.in);
-        String input = in.nextLine();
-        while(input != null && !input.isEmpty()) {
-            commands.add(input);
-            input = in.nextLine();
-        }
-        process(commands.stream());
-    }
-
-    public static void process(Stream<String> in) {
-        in.map(str -> {
-            String[] vars = str.split(" ");
-            if(vars.length !=2) return "";
-            return Command.getCommand(vars[0]).getAnswer(vars[1]);
-        }).forEach(logger::info);
-    }
-
-    private static PerformOperation isOdd() {
-        Pattern pattern = Pattern.compile("[13579]$");
-        return in -> pattern.matcher(in).find();
-    }
-
-    private static PerformOperation isPrime() {
-
-        return in -> {
-            int number = Integer.parseInt(in);
-            for (int i = 2; i < number / 2; i++) {
-                if (number % i == 0) {
-                    return false;
-                }
-            }
-            return true;
-        };
-    }
-
-    private static PerformOperation isPalindrome() {
-        return in -> {
-            int middle = (in.length() / 2);
-            String s1 = in.substring(0,middle);
-            String s2 = in.length() % 2 == 0 ? in.substring(middle) : in.substring(middle+1);
-            for(int i = 0; i<s1.length(); i++) {
-                if(s1.charAt(s1.length()-1-i)!= s2.charAt(i)) {
-                    return false;
-                }
-            }
-            return true;
-        };
     }
 
 }
