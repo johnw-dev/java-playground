@@ -18,6 +18,9 @@ dependencies {
     implementation 'org.springframework:spring-web:6.0.10'
     implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
     implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
+    implementation 'org.apache.kafka:kafka-clients:3.5.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.2'
 }
 
 test {
