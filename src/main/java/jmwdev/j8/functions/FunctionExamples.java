@@ -1,4 +1,4 @@
-package jmwdev.functions;
+package jmwdev.j8.functions;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
