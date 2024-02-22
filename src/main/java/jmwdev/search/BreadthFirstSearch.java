@@ -3,14 +3,16 @@ package jmwdev.search;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class BreadthFirstSearch {
 
     private static final Logger logger = LogManager.getLogger("BreadthFirstSearch");
+
+    private static void log(List<Node> nodes, String message) {
+        var stringRepresentation = nodes.stream().map(Node::getId).reduce((a, b) -> a+","+b);
+        logger.info("{} - {}", stringRepresentation, message);
+    }
 
     /*
      * Challange: Find the first / lowest common ancestor of 2 nodes in a tree structure<br/>
@@ -18,9 +20,19 @@ public class BreadthFirstSearch {
      *
      */
     public static void main(String[] args) {
-        Node tree = new Node(null, "root");
-        Node node = getNearestCommonAncestor(tree, args[0], args[1]).orElseThrow(RuntimeException::new);
-        logger.debug(node.getId());
+        // setup test tree
+        Node root = new Node(null, "root");
+        Arrays.stream(new int[]{1, 2, 3, 4, 5}).forEach(i -> {
+            var child = new Node(root, "c" + i);
+            for(int j=1; j <= 5; j++) {
+                child.addChild(new Node(root, "gc" + i + j));
+            }
+            root.addChild(child);
+        });
+        // set targets
+        String n1="gc43", n2="gc11";
+        Node node = getNearestCommonAncestor(root, n1, n2).orElseThrow(RuntimeException::new);
+        logger.info("result: {}", node.getId());
     }
 
     /**
@@ -30,11 +42,13 @@ public class BreadthFirstSearch {
      * @param id      the id to search for
      * @return the found Node or empty
      */
-    public static Optional<Node> getNodeBFS(List<Node> parents, String id) {
+     static Optional<Node> getNodeBFS(List<Node> parents, String id) {
+        log(parents, "BFS");
         if (!parents.isEmpty()) {
             List<Node> childrenNodes = new ArrayList<>();
             for (Node parent : parents) {
                 if (parent.getId().equals(id)) {
+                    logger.info("Found {}", parent.getId());
                     return Optional.of(parent);
                 } else {
                     childrenNodes.addAll(parent.getChildren());
@@ -53,9 +67,11 @@ public class BreadthFirstSearch {
      * @param id2    the id of the second node
      * @return found ancestor node or empty
      */
-    public static Optional<Node> getNearestCommonAncestor(Node parent, String id1, String id2) {
+    static Optional<Node> getNearestCommonAncestor(Node parent, String id1, String id2) {
         // shortcut
+        logger.info("getNearest");
         if (parent.getId().equals(id1) || parent.getId().equals(id2)) {
+            logger.info("returning parent: "+parent);
             return Optional.of(parent.getParent() != null ? parent.getParent() : parent);
         }
         List<Node> n1 = getNodeBFS(parent.getChildren(), id1).orElseThrow(NotFoundException::new).getAncestors();
